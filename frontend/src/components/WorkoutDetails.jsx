@@ -1,17 +1,26 @@
 /* eslint-disable react/prop-types */
 import { useWorkoutsContext } from "../hooks/useWorkoutsContext";
+import { useAuthContext } from "../hooks/useAuthContext";
 
 // data fns
 import formatDistanceToNow from "date-fns/formatDistanceToNow";
 
 export default function WorkoutDetails({ workout }) {
   const { dispatch } = useWorkoutsContext();
+  const { user } = useAuthContext();
 
   const handleClick = async () => {
+    if (!user) {
+      return;
+    }
+
     const response = await fetch(
       "http://localhost:4000/api/workouts/" + workout._id,
       {
         method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
       }
     );
     const json = await response.json();
